@@ -1,14 +1,55 @@
 {
   "pages": [
     "pages/homepage/main",
+    "pages/mine/main",
     "pages/index/main",
     "pages/logs/main",
     "pages/counter/main"
   ],
+  "requiredBackgroundModes": [
+    "audio"
+  ],
   "window": {
-    "backgroundTextStyle": "light",
+    "backgroundTextStyle":"light",
+    "backgroundColor": "#ffffff",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "WeChat",
-    "navigationBarTextStyle": "black"
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "学两招",
+    "enablePullDownRefresh": false,
+    "onReachBottomDistance": 50,
+    "backgroundColorBottom": "#ffffff",
+    "backgroundColorTop": "#ffffff"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#222",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/homepage/main",
+        "text": "推荐",
+        "iconPath": "/static/images/main_home.png",
+        "selectedIconPath": "/static/images/main_home_check.png"
+      },
+      {
+        "pagePath": "pages/homepage/main",
+        "text": "专栏",
+        "iconPath": "/static/images/home_icn_subscription.png",
+        "selectedIconPath": "/static/images/home_icn_subscription_pitch.png"
+      },
+      {
+        "pagePath": "pages/homepage/main",
+        "text": "动态",
+        "iconPath": "/static/images/home_dynamic.png",
+        "selectedIconPath": "/static/images/home_dynamic_active.png"
+      },
+      {
+        "pagePath": "pages/mine/main",
+        "text": "我的",
+        "iconPath": "/static/images/main_person_info.png",
+        "selectedIconPath": "/static/images/main_person_info_check.png"
+      }
+    ],
+    "borderStyle": "white"
   }
 }
