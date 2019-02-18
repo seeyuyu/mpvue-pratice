@@ -59,11 +59,13 @@
 <script>
 var Fly = require("flyio/dist/npm/wx");
 var fly = new Fly();
-var token="a9effc31a5da49472991c5d97b8bb48b"
-fly.config.headers={
-  "Content-Type":"application/json",
-  "Authorization":"Bearer "+token
-};
+// var reqfn = require('utils/request.js');
+import { reqfn } from '../../utils/request.js'//记得带上{}花括号
+// var token="a9effc31a5da49472991c5d97b8bb48b"
+// fly.config.headers={
+//   "Content-Type":"application/json",
+//   "Authorization":"Bearer "+token
+// };
 export default {
   data() {
     return {
@@ -113,11 +115,18 @@ export default {
         .catch(function(error) {
           console.log(error);
         });
+    },
+    getDatas() {
+      var that = this;
+      reqfn('v1/ucentor/users', {}, function(res){
+        console.log(res)
+      }, 'GET', that.globalData.token)
     }
   },
-  created() {
+  onLoad() {
     // 调用应用实例的方法获取全局数据
-    this.getData();
+    // this.getData();
+    this.getDatas();
   }
 };
 </script>
