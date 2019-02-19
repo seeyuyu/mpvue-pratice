@@ -211,7 +211,8 @@ export default {
             that.globalData.fid = res.data.info.uid;
             that.globalData.mine_nick = res.data.info.nickname;
             that.globalData.mine_arl = res.data.info.avatar;
-            (that.weideng = false), requestmymsg(that);
+            that.weideng = false
+            requestmymsg(that);
           } else {
             wx.showToast({
               title: res.message,
