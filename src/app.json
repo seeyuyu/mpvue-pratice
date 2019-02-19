@@ -2,6 +2,7 @@
   "pages": [
     "pages/homepage/main",
     "pages/mine/main",
+    "pages/login/main",
     "pages/index/main",
     "pages/logs/main",
     "pages/counter/main"
@@ -38,7 +39,7 @@
         "selectedIconPath": "/static/images/home_icn_subscription_pitch.png"
       },
       {
-        "pagePath": "pages/homepage/main",
+        "pagePath": "pages/login/main",
         "text": "动态",
         "iconPath": "/static/images/home_dynamic.png",
         "selectedIconPath": "/static/images/home_dynamic_active.png"

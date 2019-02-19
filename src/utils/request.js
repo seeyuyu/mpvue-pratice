@@ -6,13 +6,7 @@ const fly = new Fly()
 
 const host = 'https://h.xlzhao.com/'
 fly.config.baseURL = host
-// fly.interceptors.request.use(request => {
-//   wx.showLoading({
-//     title: '加载中',
-//     mask: true
-//   })
-//   return request
-// })
+
 function reqfn (url, data, cb, method, token) {
   wx.showLoading({
     title: '加载中',
@@ -92,6 +86,3 @@ fly.interceptors.response.use(
 export {
   reqfn
 }
-// module.exports = {
-//   req:reqfn
-// }
