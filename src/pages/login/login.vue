@@ -78,9 +78,8 @@ export default {
   methods: {
     requestmymsg() {
       console.log("onshow");
-      app.func.req(
-        "v1/ucentor/users/count",
-        {},
+      reqfn(
+        "v1/ucentor/users/count",{},
         function(res) {
           console.log(res); //401未登录
           if (res.code == 200) {
@@ -89,12 +88,25 @@ export default {
             });
           }
         },
-        "get",
-        app.globalData.token
-      );
-      app.func.req(
-        "v1/ucentor/teachers/identity",
-        {},
+        "GET",
+        that.globalData.token
+      )
+      // app.func.req(
+      //   "v1/ucentor/users/count",
+      //   {},
+      //   function(res) {
+      //     console.log(res); //401未登录
+      //     if (res.code == 200) {
+      //       that.setData({
+      //         mymsg: res.data
+      //       });
+      //     }
+      //   },
+      //   "get",
+      //   app.globalData.token
+      // );
+      reqfn(
+        "v1/ucentor/teachers/identity",{},
         function(res) {
           console.log(res); //401未登录
           if (res.code == 200) {
@@ -103,12 +115,25 @@ export default {
             });
           }
         },
-        "get",
-        app.globalData.token
-      );
-      app.func.req(
-        "v3/ucentor/shops",
-        {},
+        "GET",
+        that.globalData.token
+      )
+      // app.func.req(
+      //   "v1/ucentor/teachers/identity",
+      //   {},
+      //   function(res) {
+      //     console.log(res); //401未登录
+      //     if (res.code == 200) {
+      //       that.setData({
+      //         myidentity: res.data
+      //       });
+      //     }
+      //   },
+      //   "get",
+      //   app.globalData.token
+      // );
+      reqfn(
+        "v3/ucentor/shops",{},
         function(res) {
           console.log(res); //401未登录
           if (res.code == 200) {
@@ -118,9 +143,24 @@ export default {
             });
           }
         },
-        "get",
-        app.globalData.token
-      );
+        "GET",
+        that.globalData.token
+      )
+      // app.func.req(
+      //   "v3/ucentor/shops",
+      //   {},
+      //   function(res) {
+      //     console.log(res); //401未登录
+      //     if (res.code == 200) {
+      //       that.setData({
+      //         myshop: true,
+      //         isshop: res.data.id
+      //       });
+      //     }
+      //   },
+      //   "get",
+      //   app.globalData.token
+      // );
     },
     // 登录相关
     bindblurPhoneNum(e) {
