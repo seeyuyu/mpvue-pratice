@@ -25,7 +25,7 @@
           placeholder="验证码"
         >
         <div class="login_tab ovh">
-          <div @click="selected1">密码登录</div>
+          <div @click="checkoutmi">密码登录</div>
         </div>
         <button class="sub_btn" type="primary" form-type="submit" @click="login_code">登录</button>
         <div class="loginFile_cue"></div>
@@ -37,7 +37,7 @@
           <input :password="pass" name="phonePas" class="bor_bot" placeholder="输入密码">
         </div>
         <div class="login_tab ovh">
-          <div class="ovh" @click="selected">短信快捷登录</div>
+          <div class="ovh" @click="checkoutcode">短信快捷登录</div>
         </div>
         <button type="primary" class="sub_btn" form-type="submit">登录</button>
         <div class="loginFile_url ovh pad_lr30"></div>
@@ -45,12 +45,14 @@
     </div>
   </div>
 </template>
+<style src="../../../static/main.css">
+</style>
 <style>
-@import "../../../static/main.css";
 @import "../../../static/css/login.css";
 </style>
 <script>
 import { reqfn } from "../../utils/request.js"; //记得带上{}花括号
+var utilMd5 = require("../../utils/md5.js");
 export default {
   data() {
     return {
@@ -77,90 +79,59 @@ export default {
   },
   methods: {
     requestmymsg() {
+      var that = this;
       console.log("onshow");
       reqfn(
-        "v1/ucentor/users/count",{},
+        "v1/ucentor/users/count",
+        {},
         function(res) {
           console.log(res); //401未登录
           if (res.code == 200) {
-            that.setData({
-              mymsg: res.data
-            });
+            console.log(res);
+            that.mymsg = res.data;
           }
         },
         "GET",
         that.globalData.token
-      )
-      // app.func.req(
-      //   "v1/ucentor/users/count",
-      //   {},
-      //   function(res) {
-      //     console.log(res); //401未登录
-      //     if (res.code == 200) {
-      //       that.setData({
-      //         mymsg: res.data
-      //       });
-      //     }
-      //   },
-      //   "get",
-      //   app.globalData.token
-      // );
+      );
+
       reqfn(
-        "v1/ucentor/teachers/identity",{},
+        "v1/ucentor/teachers/identity",
+        {},
         function(res) {
           console.log(res); //401未登录
           if (res.code == 200) {
-            that.setData({
-              myidentity: res.data
-            });
+            that.myidentity = res.data;
           }
         },
         "GET",
         that.globalData.token
-      )
-      // app.func.req(
-      //   "v1/ucentor/teachers/identity",
-      //   {},
-      //   function(res) {
-      //     console.log(res); //401未登录
-      //     if (res.code == 200) {
-      //       that.setData({
-      //         myidentity: res.data
-      //       });
-      //     }
-      //   },
-      //   "get",
-      //   app.globalData.token
-      // );
+      );
+
       reqfn(
-        "v3/ucentor/shops",{},
+        "v3/ucentor/shops",
+        {},
         function(res) {
           console.log(res); //401未登录
           if (res.code == 200) {
-            that.setData({
-              myshop: true,
-              isshop: res.data.id
-            });
+            that.myshop = true;
+            that.isshop = res.data.id;
           }
         },
         "GET",
         that.globalData.token
-      )
-      // app.func.req(
-      //   "v3/ucentor/shops",
-      //   {},
-      //   function(res) {
-      //     console.log(res); //401未登录
-      //     if (res.code == 200) {
-      //       that.setData({
-      //         myshop: true,
-      //         isshop: res.data.id
-      //       });
-      //     }
-      //   },
-      //   "get",
-      //   app.globalData.token
-      // );
+      );
+    },
+    //登录页之间切换
+    checkoutmi() {
+      // console.log("密码登陆");
+      this.selected1 = true;
+      this.selected = false;
+    },
+    checkoutcode() {
+      // console.log("验证码登陆");
+      this.selected1 = false;
+      this.selected = true;
     },
     // 登录相关
     bindblurPhoneNum(e) {
@@ -205,14 +176,15 @@ export default {
         that.globalData.token
       );
     },
+    // 验证码登录
     bindLoginCode(e) {
       console.log("bindLoginCode");
       var that = this;
       console.log(e);
       var type = e.target.dataset.type;
-      var phoneNum = e.detail.value.phoneNum;
-      var phoneCode = e.detail.value.phoneCode;
-      var phonePas = e.detail.value.phonePas;
+      var phoneNum = e.target.value.phoneNum;
+      var phoneCode = e.target.value.phoneCode;
+      var phonePas = e.target.value.phonePas;
       if (phonePas) {
         phonePas = utilMd5.hexMD5(phonePas);
       }
@@ -251,8 +223,8 @@ export default {
             that.globalData.fid = res.data.info.uid;
             that.globalData.mine_nick = res.data.info.nickname;
             that.globalData.mine_arl = res.data.info.avatar;
-            that.weideng = false
-            requestmymsg(that);
+            that.weideng = false;
+            that.requestmymsg(that);
           } else {
             wx.showToast({
               title: res.message,
@@ -267,86 +239,29 @@ export default {
 
     bindLoginPas() {
       console.log("bindLoginPas");
-      // console.log(e);
-    },
-    //登录页之间切换
-    selected() {
-      console.log("selected");
-      this.selected1 = false;
-      this.selected = true;
-      // this.setData({
-      //   selected1: false,
-      //   selected: true
-      // });
-    },
-    selected1() {
-      console.log("selected1");
-      this.selected1 = true;
-      this.selected = false;
-      // this.setData({
-      //   selected: false,
-      //   selected1: true
-      // });
     },
     // 明密文切换
     checkpass() {
       console.log("checkpass");
       this.pass = false;
       this.eyeopen = true;
-      // this.setData({
-      //   pass: false,
-      //   eyeopen: true
-      // });
     },
     checkpassd() {
       console.log("checkpassd");
       this.pass = true;
       this.eyeopen = false;
-      // this.setData({
-      //   pass: true,
-      //   eyeopen: false
-      // });
     },
     // 退出登录
     mine_quit() {
       console.log("退出登录");
       var that = this;
-      // app.func.req(
-      //   "v1/ucentor/users/logout",
-      //   {},
-      //   function(res) {
-      //     console.log(res); //401未登录
-      //     if (res.code !== 200) {
-      //       wx.navigateTo({
-      //         url: "../login/login?"
-      //       });
-      //     } else {
-      //       app.globalData.token = "";
-      //       app.globalData.mine_arl = "";
-      //       app.globalData.mine_nick = "";
-      //       that.setData({
-      //         weideng: true,
-      //         mine_arl: app.globalData.mine_arl,
-      //         mine_nick: app.globalData.mine_nick
-      //       });
-      //     }
-      //   },
-      //   "POST",
-      //   app.globalData.token
-      // );
     },
     // 未开放
     none_have() {
       var that = this;
       that.non_have = false;
-      // that.setData({
-      //   non_have: false
-      // });
       setTimeout(function() {
         that.non_have = true;
-        // that.setData({
-        //   non_have: true
-        // });
       }, 2000);
     }
   }
