@@ -282,7 +282,8 @@ export default {
             console.log(res.data.info.uid);
             that.globalData.fid = res.data.info.uid;
             that.globalData.mine_nick = res.data.info.nickname;
-            that.globalData.mine_arl = res.data.info.avatar;
+            that.mine_nick = res.data.info.nickname;
+            that.mine_arl = res.data.info.avatar;
             that.weideng = false;
             that.requestmymsg(that);
           } else {
