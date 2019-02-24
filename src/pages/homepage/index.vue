@@ -42,7 +42,7 @@
           <!-- <teacherli teacherarr="{{goodTeacher}}" environment="{{environment}}"></teacherli> -->
           <view class="goods_list" v-for="item in goodTeacher" :key="item">
             <!-- {{item.uid}} -->
-            <navigator url="../../detail/teacher/teacher?uid=" class="goods_list_a">
+            <navigator open-type="switchTab" :url="'/pages/teacher/main?uid='+item.uid" class="goods_list_a">
               <view class="goods_list_img fl">
                 <img :src="item.avatar">
               </view>

@@ -2,6 +2,7 @@
   "pages": [
     "pages/homepage/main",
     "pages/mine/main",
+    "pages/teacher/main",
     "pages/login/main",
     "pages/index/main",
     "pages/logs/main",
@@ -39,7 +40,7 @@
         "selectedIconPath": "/static/images/home_icn_subscription_pitch.png"
       },
       {
-        "pagePath": "pages/login/main",
+        "pagePath": "pages/teacher/main",
         "text": "动态",
         "iconPath": "/static/images/home_dynamic.png",
         "selectedIconPath": "/static/images/home_dynamic_active.png"
