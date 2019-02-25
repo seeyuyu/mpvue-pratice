@@ -1260,6 +1260,7 @@
     display:inline-block;
     position: absolute;
     top:20rpx;
+    right:0px;
 }
 .speak_tip{
     width: 100%;

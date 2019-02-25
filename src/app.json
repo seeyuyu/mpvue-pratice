@@ -40,7 +40,7 @@
         "selectedIconPath": "/static/images/home_icn_subscription_pitch.png"
       },
       {
-        "pagePath": "pages/teacher/main",
+        "pagePath": "pages/homepage/main",
         "text": "动态",
         "iconPath": "/static/images/home_dynamic.png",
         "selectedIconPath": "/static/images/home_dynamic_active.png"

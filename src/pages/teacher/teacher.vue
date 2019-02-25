@@ -2,7 +2,7 @@
 <template>
   <div class="container">
     <!--07-24UI改版-->
-    <div class="header02">
+    <div class="header02" v-if="resData.user_info">
       <div class="head_bigpic">
         <img class="headpic" :src="resData.user_info.background">
         <div class="headpic_bg"></div>
@@ -21,25 +21,26 @@
     <!--导航-->
     <div class="teacher_nav">
       <div class="teacher_nav_div" :class="ding?'ding':''">
-        <div class="nav_text" :class="_num == 1?'cur':''" data-nav="1" @click="teacher_all">栏目
+        <div class="nav_text" :class="inum == 1?'cur':''" data-nav="1" @click="teacher_all">栏目
           <div class="nav_border"></div>
         </div>
         <div
           class="nav_text"
-          :class="_num == 0?'cur':''"
+          :class="inum == 0?'cur':''"
           data-nav="0"
           @click="teacher_all"
-          v-if="mins"
+
         >评价
           <div class="speak_icon"></div>
           <div class="nav_border"></div>
         </div>
       </div>
+
     </div>
     <!--下面是视频详情页列表的形式-->
-    <div class="video_playFiles" :class="is_show?'hidden':'show'" data-nav="0" v-if="_num == 1">
+    <div class="video_playFiles" :class="is_show?'hidden':'show'" data-nav="0" v-if="inum == 1">
       <!--7-25UI改版-->
-      <div class="list_all">
+      <div class="list_all" v-if="listVideo">
         <div class="list_wrapper02" v-for="videosList in listVideo" :key="videosList">
           <a
             :href="'../../detail/videoDetail/videoDetail?id='+videosList.id+'&uid='+videosList.id+'&userid='+userid+'&shop_id='+shop_id+'&share_uid='+share_uid"
@@ -47,10 +48,10 @@
             <div class="fl list_num">{{index+1}}.</div>
             <div class="list_num_title">
               <div class="two_line">
-                <span class="try_icon" v-if="videosList.payment==0 && mins">试看</span>
+                <span class="try_icon" v-if="videosList.payment==0">试看</span>
                 {{videosList.name}}
               </div>
-              <div class="list_duration" v-if="mins">时长{{videosList.duration}}</div>
+              <div class="list_duration">时长{{videosList.duration}}</div>
             </div>
             <div class="lock_icon" v-if="videosList.payment>0 && videosList.is_buy==0"></div>
           </a>
@@ -91,7 +92,7 @@
           <a
             class="link2_vip vip_none1"
             id="link2_vip"
-            :url="'../confirm/confirm?id='+playDetails.video_info.id+'&priceVideo='+class_p+'&op_uid='+op_uid+'&videocon='+videocon+'&nameVideo='+nameVideo+'&bgImg='+bgImg+'&shop_id='+shop_id+'&share_uid='+share_uid"
+            :url="'../confirm/confirm?priceVideo='+class_p+'&op_uid='+op_uid+'&videocon='+videocon+'&nameVideo='+nameVideo+'&bgImg='+bgImg+'&shop_id='+shop_id+'&share_uid='+share_uid"
           >
             <div class="be-vip">
               <span id="span1_vip">¥ {{class_all}}订阅栏目</span>
@@ -106,7 +107,7 @@
       </div>
     </div>
     <!--评论-->
-    <div class="video_intro" v-if="_num == 0">
+    <div class="video_intro" v-if="inum == 0">
       <div class="speak_tip">
         <div class="speak_tip_txt fl" @click="pop1">{{tips_txt}}</div>
         <div class="fr anwer_icon" @click="what"></div>
@@ -151,14 +152,16 @@
       </div>
     </div>
     <div class="evaluate_bg" v-show="!isevaluate"></div>
-    <div class="evaluate_detail" v-show="!isevaluate">
-      <div class="close_evaluate" @click="close_evalute"></div>
-      <div class="evaluate_detail_title">点评奖{{evaluateCon.gold}}金币</div>
-      <div class="evaluate_detail_tip">您已评价</div>
-      <div class="evaluate_tag_div">
-        <div class="evaluate_detail_tag fl" v-for="item in evaluateCon.tags" :key="item">{{item}}</div>
+    <div v-if="evaluateCon">
+      <div class="evaluate_detail" v-show="!isevaluate">
+        <div class="close_evaluate" @click="close_evalute"></div>
+        <div class="evaluate_detail_title" v-if="evaluateCon">点评奖{{evaluateCon.gold}}金币</div>
+        <div class="evaluate_detail_tip">您已评价</div>
+        <div class="evaluate_tag_div">
+          <div class="evaluate_detail_tag fl" v-for="item in evaluateCon.tags" :key="item">{{item}}</div>
+        </div>
+        <div class="evaluate_detail_con">{{evaluateCon.comment}}</div>
       </div>
-      <div class="evaluate_detail_con">{{evaluateCon.comment}}</div>
     </div>
     <!--加载-->
     <loading v-show="!hidden">加载中...</loading>
@@ -205,7 +208,7 @@ export default {
       isevaluate: true,
       mins: false,
       environment: false,
-      _num: 1,
+      inum: 1,
       sort_num: 1,
       pop1: "popdiv",
       tips_txt: "订阅栏目后点评赢金币！（金币可兑换现金）",
@@ -221,6 +224,76 @@ export default {
     };
   },
   methods: {
+    //    格式化秒数 换成： 00:00:00
+    formatSeconds: function(value) {
+      var seconds = parseInt(value); // 秒
+      var minutes = 0; // 分
+      var hours = 0; // 小时
+      var result;
+      if (seconds > 60) {
+        minutes = parseInt(seconds / 60);
+        seconds = parseInt(seconds % 60);
+        if (minutes > 60) {
+          hours = parseInt(minutes / 60);
+          minutes = parseInt(minutes % 60);
+        }
+      }
+      if (seconds < 10) {
+        result = "0" + parseInt(seconds);
+      } else {
+        result = "" + parseInt(seconds);
+      }
+      if (minutes > 0) {
+        if (minutes < 10) {
+          result = "0" + parseInt(minutes) + "：" + result;
+        } else {
+          result = "" + parseInt(minutes) + "：" + result;
+        }
+      }
+      if (hours > 0) {
+        if (hours < 10) {
+          result = "0" + parseInt(hours) + "：" + result;
+        } else {
+          result = "" + parseInt(hours) + "：" + result;
+        }
+      }
+      return result;
+    },
+    firstload: function(that, sort) {
+      reqfn(
+        "v1/videos/video-part/" + all_uid + "?sort=asc&is_limit=1&page=1",
+        {},
+        function(res) {
+          console.log(res.code)
+          if (res.code == 200) {
+            list_video = res.data.videos;
+            if (res.data.count == 0) {
+              console.log("没有数据");
+              that.have_video = true;
+              that.hidden = true;
+              return false;
+            }
+            console.log(res.data.videos);
+            that.listVideo = list_video;
+            that.resDatanum = res.data;
+            that.hidden = true;
+            console.log(that.listVideo);
+            console.log(that.flag)
+            if (that.flag) {
+              order(that);
+            }
+          } else {
+            that.hidden = true;
+            wx.showToast({
+              title: res.message,
+              icon: "loading"
+            });
+          }
+        },
+        "GET",
+        that.globalData.token
+      );
+    },
     list_show: function() {
       var that = this;
       if (that.data.is_show) {
@@ -231,7 +304,8 @@ export default {
     },
     teacher_all: function(e) {
       var that = this;
-      that._num = e.target.dataset.nav;
+      console.log(e)
+      that.inum = e.target.dataset.nav;
       if (e.target.dataset.nav == 0) {
         talk_list = true;
       } else {
@@ -376,8 +450,8 @@ export default {
     sort = "";
     if (navi.shop_id) {
       shop_id = navi.shop_id;
-      that.shop_id = shop_id
-      that.mins = that.globalData.mins
+      that.shop_id = shop_id;
+      that.mins = that.globalData.mins;
       // app.func.req(
       //   "v1/shops/" + shop_id,
       //   {},
@@ -393,6 +467,7 @@ export default {
         "v1/shops/" + shop_id,
         {},
         function(res) {
+          console.log(res);
           wx.setNavigationBarTitle({
             title: res.data.shop_name
           });
@@ -410,7 +485,6 @@ export default {
     if (navi.share_uid && navi.share_uid != that.globalData.fid) {
       share_uid = navi.share_uid;
     }
-    console.log("11111111111111111111111111111111111111111");
     console.log(share_uid);
     that.share_uid = share_uid;
     console.log(share_uid);
@@ -430,39 +504,14 @@ export default {
     });
 
     // 新
-    // app.func.req(
-    //   "v1/users/user-info/" + navi.uid,
-    //   {},
-    //   function(res) {
-    //     if (res.code == 200) {
-    //       that.setData({
-    //         resData: res.data,
-    //         list_none: false,
-    //         isfollow: res.data.user_info.is_follow,
-    //         userid: res.data.user_info.uid,
-    //         op_uid: navi.uid,
-    //         bgImg: res.data.user_info.avatar,
-    //         nameVideo: res.data.user_info.nickname,
-    //         videocon: res.data.user_info.sign
-    //       });
-    //       class_name = res.data.user_info.nickname;
-    //       class_name_img = res.data.user_info.avatar;
-    //     } else {
-    //       wx.showToast({
-    //         title: res.message,
-    //         icon: "loading"
-    //       });
-    //     }
-    //   },
-    //   "GET",
-    //   app.globalData.token
-    // );
     reqfn(
       "v1/users/user-info/" + navi.uid,
       {},
       function(res) {
+        console.log(res.data.user_info.background);
         if (res.code == 200) {
           that.resData = res.data;
+          console.log(that.resData);
           that.list_none = false;
           that.isfollow = res.data.user_info.is_follow;
           that.userid = res.data.user_info.uid;
@@ -484,28 +533,8 @@ export default {
       that.globalData.token
     );
     // 新
-    firstload(that, sort);
+    that.firstload(that, sort);
     // 栏目简介
-    // app.func.req(
-    //   "v1/lanmus/" + navi.uid,
-    //   {
-    //     //            diy_id:2
-    //   },
-    //   function(res) {
-    //     if (res.code == 200) {
-    //       hb_con = res.data.info;
-    //       var tell_imgCount = 10;
-    //       var tell_article = hb_con;
-    //       WxParse.wxParse("tell_article", "html", tell_article, that, 0);
-    //     } else {
-    //       that.setData({
-    //         have: true
-    //       });
-    //     }
-    //   },
-    //   "GET",
-    //   app.globalData.token
-    // );
     reqfn(
       "v1/lanmus/" + navi.uid,
       {},
@@ -523,36 +552,6 @@ export default {
       that.globalData.token
     );
     // 新
-    // app.func.req(
-    //   "v1/users/teacher-price/" + navi.uid,
-    //   {},
-    //   function(res) {
-    //     var data = res.data;
-    //     if (data) {
-    //       if (data.year !== "0.00") {
-    //         that.setData({
-    //           allbottom: true,
-    //           class_all: data.year + "/年",
-    //           class_p: data.year
-    //         });
-    //       } else if (data.halt_year !== "0.00") {
-    //         that.setData({
-    //           allbottom: true,
-    //           class_all: data.halt_year + "/半年",
-    //           class_p: data.year
-    //         });
-    //       } else if (data.month !== "0.00") {
-    //         that.setData({
-    //           allbottom: true,
-    //           class_all: data.month + "/月",
-    //           class_p: data.year
-    //         });
-    //       }
-    //     }
-    //   },
-    //   "GET",
-    //   app.globalData.token
-    // );
     reqfn(
       "v1/users/teacher-price/" + navi.uid,
       {},
@@ -578,59 +577,6 @@ export default {
       that.globalData.token
     );
     // 评论
-    // app.func.req(
-    //   "v1/comment-teachers/assessed/" + navi.uid + "?page=1",
-    //   {},
-    //   function(res) {
-    //     if (res.code == 200) {
-    //       that.setData({
-    //         comment: res.data,
-    //         comments: res.data.comments
-    //       });
-    //       if (res.data.is_buy == 1) {
-    //         if (res.data.status == 0) {
-    //           var tips_txt =
-    //             "去点评，赢" +
-    //             res.data.gold +
-    //             "金币！(当前汇率" +
-    //             res.data.rmb_to_gold +
-    //             "金币=1元）";
-    //           that.setData({
-    //             tips_txt: tips_txt,
-    //             pop1: "popnav"
-    //           });
-    //         } else {
-    //           that.setData({
-    //             tips_txt: "亲，您已评价过！",
-    //             pop1: "popalready"
-    //           });
-    //           app.func.req(
-    //             "v1/ucentor/comment-teachers/already-ass/" + navi.uid,
-    //             {},
-    //             function(res) {
-    //               if (res.data) {
-    //                 that.setData({
-    //                   evaluateCon: res.data
-    //                 });
-    //               }
-    //             },
-    //             "GET",
-    //             app.globalData.token
-    //           );
-    //         }
-    //       }
-    //       if (res.data.pageCount > pagenum) {
-    //         canscroll = true;
-    //       }
-    //     } else {
-    //       that.setData({
-    //         have: true
-    //       });
-    //     }
-    //   },
-    //   "GET",
-    //   app.globalData.token
-    // );
     reqfn(
       "v1/comment-teachers/assessed/" + navi.uid + "?page=1",
       {},
@@ -668,7 +614,7 @@ export default {
                 {},
                 function(res) {
                   if (res.data) {
-                    that.evaluateCon= res.data
+                    that.evaluateCon = res.data;
                   }
                 },
                 "GET",
@@ -680,7 +626,7 @@ export default {
             canscroll = true;
           }
         } else {
-          that.have= true
+          that.have = true;
         }
       },
       "GET",
@@ -690,9 +636,9 @@ export default {
   onPageScroll(e) {
     var that = this;
     if (e.scrollTop > 330) {
-      that.ding=true
+      that.ding = true;
     } else if (e.scrollTop < 330) {
-      that.ding=false
+      that.ding = false;
     }
   },
   // 上拉加载
@@ -701,15 +647,15 @@ export default {
     if (talk_list) {
       if (canscroll) {
         canscroll = false;
-        that.hidden= false
+        that.hidden = false;
         pagenum++;
         reqfn(
           "v1/comment-teachers/assessed/" + all_uid + "?page=" + pagenum,
           {},
           function(res) {
             if (res.code == 200) {
-              that.comments= that.data.comments.concat(res.data.comments)
-              that.hidden= true
+              that.comments = that.data.comments.concat(res.data.comments);
+              that.hidden = true;
               if (res.data.pageCount > pagenum) {
                 canscroll = true;
               }
@@ -719,7 +665,7 @@ export default {
           that.globalData.token
         );
       } else {
-        that.list_none=true
+        that.list_none = true;
       }
     }
   },

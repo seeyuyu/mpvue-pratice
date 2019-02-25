@@ -42,7 +42,7 @@
           <!-- <teacherli teacherarr="{{goodTeacher}}" environment="{{environment}}"></teacherli> -->
           <view class="goods_list" v-for="item in goodTeacher" :key="item">
             <!-- {{item.uid}} -->
-            <navigator open-type="switchTab" :url="'/pages/teacher/main?uid='+item.uid" class="goods_list_a">
+            <navigator :url="'/pages/teacher/main?uid='+item.uid" class="goods_list_a">
               <view class="goods_list_img fl">
                 <img :src="item.avatar">
               </view>
@@ -104,7 +104,7 @@
             :data-id="item.id"
             :data-inde="index"
             class="subject_scroll"
-            :class="_sub==index?'subactive':''"
+            :class="isub==index?'subactive':''"
             bindtap="subchectout"
           >{{item.name}}</view>
           <view class="subject_false"></view>
@@ -203,8 +203,8 @@ export default {
       showAll: true,
       indicatorDots: true,
       autoplay: true,
-      _num: 0,
-      _sub: 0,
+      inum: 0,
+      isub: 0,
       searchPage: false,
       searchResult: true,
       hidden: true,
