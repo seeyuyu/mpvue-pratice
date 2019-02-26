@@ -74,6 +74,12 @@
         <div class="class_intro_title">课程简介</div>
         <div class="template_div">
           <!-- <template is="wxParse" data="{{wxParseData:tell_article.nodes}}"/> -->
+          <!-- <wxParse :content="tell_article.nodes" @preview="preview" @navigate="navigate" /> -->
+          <!-- <template> -->
+            <!-- <div> -->
+              <wxParse :content="tell_article" @preview="preview" @navigate="navigate" />
+            <!-- </div> -->
+          <!-- </template> -->
         </div>
         <div v-if="have" class="no_bird">
           <img src="http://m.xlzhao.com/images/bird.png" mode="widthFix">
@@ -171,9 +177,14 @@
 <style src="../../../static/css/teacher.css">
 /* @import "../../../static/css/homepage.css"; */
 </style>
+<style>
+@import url("~mpvue-wxparse/src/wxParse.css");
+</style>
 <script>
 import { reqfn } from "../../utils/request.js";
 // var WxParse = require('../../../wxParse/wxParse.js');
+import wxParse from 'mpvue-wxparse'
+
 var hb_con = "";
 var all_uid = "";
 var class_name = "";
@@ -190,6 +201,9 @@ var class_all = "";
 var share_uid = "";
 var pagenum = 1;
 export default {
+  components: {
+    wxParse
+  },
   data() {
     return {
       is_show: false,
@@ -220,7 +234,8 @@ export default {
       listVideo: [],
       op_uid: "",
       resDatanum: "",
-      mine_id: ""
+      mine_id: "",
+      tell_article:""
     };
   },
   methods: {
@@ -543,6 +558,9 @@ export default {
           hb_con = res.data.info;
           var tell_imgCount = 10;
           var tell_article = hb_con;
+          console.log("?????")
+          console.log(res.data.info)
+          that.tell_article=hb_con
           // WxParse.wxParse("tell_article", "html", tell_article, that, 0);
         } else {
           that.have = true;
