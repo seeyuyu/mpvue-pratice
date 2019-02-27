@@ -77,7 +77,7 @@
           <!-- <wxParse :content="tell_article.nodes" @preview="preview" @navigate="navigate" /> -->
           <!-- <template> -->
             <!-- <div> -->
-              <wxParse :content="tell_article" @preview="preview" @navigate="navigate" />
+              <wxParse :content="tell_article" @preview="preview" @navigate="navigate"/>
             <!-- </div> -->
           <!-- </template> -->
         </div>
@@ -173,12 +173,12 @@
     <loading v-show="!hidden">加载中...</loading>
   </div>
 </template>
+<style>
+@import url("~mpvue-wxparse/src/wxParse.css");
+</style>
 <style src="../../../static/main.css"></style>
 <style src="../../../static/css/teacher.css">
 /* @import "../../../static/css/homepage.css"; */
-</style>
-<style>
-@import url("~mpvue-wxparse/src/wxParse.css");
 </style>
 <script>
 import { reqfn } from "../../utils/request.js";
