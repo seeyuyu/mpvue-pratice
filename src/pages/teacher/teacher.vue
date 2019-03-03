@@ -467,6 +467,7 @@ export default {
       shop_id = navi.shop_id;
       that.shop_id = shop_id;
       that.mins = that.globalData.mins;
+
       // app.func.req(
       //   "v1/shops/" + shop_id,
       //   {},
