@@ -447,7 +447,22 @@ export default {
         confirmText: "知道了",
         confirmColor: "#2A90D7",
         showCancel: false,
-        suc
+        success: function(res) {
+          if (res.confirm) {
+            // console.log('用户点击确定')
+          } else {
+            // console.log('用户点击取消')
+          }
+        }
+      });
+    }
+  },
+  onLoad(navi) {
+    //  这里要非常注意，微信的scroll-view必须要设置高度才能监听滚动事件，所以，需要在页面的onLoad事件中给scroll-view的高度赋值
+    var that = this;
+    console.log(navi);
+    console.log(that.globalData.mins);
+    sort = "";
     if (navi.shop_id) {
       shop_id = navi.shop_id;
       that.shop_id = shop_id;
