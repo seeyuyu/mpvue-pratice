@@ -684,6 +684,7 @@ export default {
         );
       } else {
         that.list_none = true;
+        // that.list_none = true;
       }
     }
   },
