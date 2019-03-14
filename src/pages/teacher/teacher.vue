@@ -95,8 +95,7 @@
           <div class="fl vip_footer_guan" @click="ifollow" v-else>
             <i class="guan_icon"></i>关注
           </div>
-          <a
-            class="link2_vip vip_none1"
+          <a class="link2_vip vip_none1"
             id="link2_vip"
             :url="'../confirm/confirm?priceVideo='+class_p+'&op_uid='+op_uid+'&videocon='+videocon+'&nameVideo='+nameVideo+'&bgImg='+bgImg+'&shop_id='+shop_id+'&share_uid='+share_uid"
           >
