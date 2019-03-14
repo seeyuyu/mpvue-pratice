@@ -135,11 +135,7 @@
           <div class="list_none" v-if="list_none">到底啦~</div>
         </div>
         <div v-else>
-          <img
-            src="http://static1.xlzhao.com/frontend/images/icon_no_comment.png"
-            mode="widthFix"
-            class="comm_bird"
-          >
+          <img src="http://static1.xlzhao.com/frontend/images/icon_no_comment.png" mode="widthFix" class="comm_bird">
           <div class="comm_txt">抱歉，该老师的学员好像都很懒</div>
           <div class="comm_txt">什么都没留下噢！</div>
         </div>
