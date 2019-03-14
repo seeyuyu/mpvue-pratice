@@ -24,18 +24,11 @@
         <div class="nav_text" :class="inum == 1?'cur':''" data-nav="1" @click="teacher_all">栏目
           <div class="nav_border"></div>
         </div>
-        <div
-          class="nav_text"
-          :class="inum == 0?'cur':''"
-          data-nav="0"
-          @click="teacher_all"
-
-        >评价
+        <div class="nav_text" :class="inum == 0?'cur':''" data-nav="0" @click="teacher_all">评价
           <div class="speak_icon"></div>
           <div class="nav_border"></div>
         </div>
       </div>
-
     </div>
     <!--下面是视频详情页列表的形式-->
     <div class="video_playFiles" :class="is_show?'hidden':'show'" data-nav="0" v-if="inum == 1">
@@ -76,9 +69,9 @@
           <!-- <template is="wxParse" data="{{wxParseData:tell_article.nodes}}"/> -->
           <!-- <wxParse :content="tell_article.nodes" @preview="preview" @navigate="navigate" /> -->
           <!-- <template> -->
-            <!-- <div> -->
-              <wxParse :content="tell_article" @preview="preview" @navigate="navigate"/>
-            <!-- </div> -->
+          <!-- <div> -->
+          <wxParse :content="tell_article" @preview="preview" @navigate="navigate"/>
+          <!-- </div> -->
           <!-- </template> -->
         </div>
         <div v-if="have" class="no_bird">
@@ -95,7 +88,8 @@
           <div class="fl vip_footer_guan" @click="ifollow" v-else>
             <i class="guan_icon"></i>关注
           </div>
-          <a class="link2_vip vip_none1"
+          <a
+            class="link2_vip vip_none1"
             id="link2_vip"
             :url="'../confirm/confirm?priceVideo='+class_p+'&op_uid='+op_uid+'&videocon='+videocon+'&nameVideo='+nameVideo+'&bgImg='+bgImg+'&shop_id='+shop_id+'&share_uid='+share_uid"
           >
@@ -118,12 +112,7 @@
         <div class="fr anwer_icon" @click="what"></div>
       </div>
       <div class="tag_all">
-        <div
-          v-for="item in comment.tags"
-          :key="item"
-          class="speak_tag"
-          :class="item.type==1?'':'color666'"
-        >{{item.tag}}({{item.count}})</div>
+        <div v-for="item in comment.tags" :key="item" class="speak_tag" :class="item.type==1?'':'color666'">{{item.tag}}({{item.count}})</div>
       </div>
       <div class="comm_section video_fff">
         <div class="comment" id="comment">
@@ -182,7 +171,7 @@
 <script>
 import { reqfn } from "../../utils/request.js";
 // var WxParse = require('../../../wxParse/wxParse.js');
-import wxParse from 'mpvue-wxparse'
+import wxParse from "mpvue-wxparse";
 
 var hb_con = "";
 var all_uid = "";
@@ -234,7 +223,7 @@ export default {
       op_uid: "",
       resDatanum: "",
       mine_id: "",
-      tell_article:""
+      tell_article: ""
     };
   },
   methods: {
@@ -278,7 +267,7 @@ export default {
         "v1/videos/video-part/" + all_uid + "?sort=asc&is_limit=1&page=1",
         {},
         function(res) {
-          console.log(res.code)
+          console.log(res.code);
           if (res.code == 200) {
             list_video = res.data.videos;
             if (res.data.count == 0) {
@@ -292,7 +281,7 @@ export default {
             that.resDatanum = res.data;
             that.hidden = true;
             console.log(that.listVideo);
-            console.log(that.flag)
+            console.log(that.flag);
             if (that.flag) {
               order(that);
             }
@@ -318,7 +307,7 @@ export default {
     },
     teacher_all: function(e) {
       var that = this;
-      console.log(e)
+      console.log(e);
       that.inum = e.target.dataset.nav;
       if (e.target.dataset.nav == 0) {
         talk_list = true;
@@ -557,9 +546,9 @@ export default {
           hb_con = res.data.info;
           var tell_imgCount = 10;
           var tell_article = hb_con;
-          console.log("?????")
-          console.log(res.data.info)
-          that.tell_article=hb_con
+          console.log("?????");
+          console.log(res.data.info);
+          that.tell_article = hb_con;
           // WxParse.wxParse("tell_article", "html", tell_article, that, 0);
         } else {
           that.have = true;
