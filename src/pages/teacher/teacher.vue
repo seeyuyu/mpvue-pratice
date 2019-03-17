@@ -89,10 +89,7 @@
             <i class="guan_icon"></i>关注
           </div>
           <a
-            class="link2_vip vip_none1"
-            id="link2_vip"
-            :url="'../confirm/confirm?priceVideo='+class_p+'&op_uid='+op_uid+'&videocon='+videocon+'&nameVideo='+nameVideo+'&bgImg='+bgImg+'&shop_id='+shop_id+'&share_uid='+share_uid"
-          >
+            class="link2_vip vip_none1" id="link2_vip" :url="'../confirm/confirm?priceVideo='+class_p+'&op_uid='+op_uid+'&videocon='+videocon+'&nameVideo='+nameVideo+'&bgImg='+bgImg+'&shop_id='+shop_id+'&share_uid='+share_uid">
             <div class="be-vip">
               <span id="span1_vip">¥ {{class_all}}订阅栏目</span>
             </div>
