@@ -36,7 +36,7 @@
       <div class="list_all" v-if="listVideo">
         <div class="list_wrapper02" v-for="videosList in listVideo" :key="videosList">
           <a
-            :href="'../../detail/videoDetail/videoDetail?id='+videosList.id+'&uid='+videosList.id+'&userid='+userid+'&shop_id='+shop_id+'&share_uid='+share_uid"
+            :href="'/pages/videoDetail/videoDetail?id='+videosList.id+'&uid='+videosList.id+'&userid='+userid+'&shop_id='+shop_id+'&share_uid='+share_uid"
           >
             <div class="fl list_num">{{index+1}}.</div>
             <div class="list_num_title">
