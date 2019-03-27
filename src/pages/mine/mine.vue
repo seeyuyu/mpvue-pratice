@@ -113,6 +113,7 @@ var utilMd5 = require("../../utils/md5.js");
 //   "Content-Type":"application/json",
 //   "Authorization":"Bearer "+token
 // };
+
 export default {
   data() {
     return {
