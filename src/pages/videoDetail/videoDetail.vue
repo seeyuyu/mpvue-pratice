@@ -758,6 +758,428 @@ export default {
   onUnload: function() {
     // 页面卸载时
     videoContext.pause();
-  }
+  },
+
+  scrollWhere: function (e) {
+        var that = this;
+        // console.log(e.detail.scrollTop)
+        // console.log("高度："+dong)
+        if (e.detail.scrollTop > dong) {
+            that.setData({
+                speak_div_top: true
+            })
+        } else {
+            that.setData({
+                speak_div_top: false
+            })
+        }
+    },
+    //   点赞和倒赞
+    loves: function (e) {
+        var that = this;
+        var type = e.target.dataset.type;
+        app.func.req('v1/ucentor/loves', {
+                video_id: e.target.dataset.id,
+                type: type
+            },
+            function (res) {
+                //console.log(res);//401未登录
+                if (res.code == 200) {
+                    var obj = that.data.playDetails;
+                    that.setData({
+                        playDetails: obj
+                    });
+                } else if (res.code == 401) {
+                    wx.navigateTo({
+                        url: '../../tabBar/login/login'
+                    });
+                } else if (res.code !== 200) {
+                    wx.showModal({
+                        title: '提示',
+                        content: res.message,
+                        showCancel: false,
+                        confirmText: '好'
+                    });
+                }
+            }, "POST", app.globalData.token);
+    },
+    //    收藏
+    collects: function (e) {
+        var that = this;
+        app.func.req('v1/ucentor/collects', {
+                video_id: e.target.dataset.id
+            },
+            function (res) {
+                console.log(res); //401未登录
+                if (res.code == 200) {
+                    that.setData({
+                        playDetails_co: 1
+                    });
+                    wx.showToast({
+                        title: '已收藏',
+                        icon: 'success',
+                        duration: 1500
+                    })
+                } else if (res.code == 401) {
+                    wx.navigateTo({
+                        url: '../../tabBar/login/login'
+                    });
+                } else if (res.code !== 200) {
+                    wx.showModal({
+                        title: '提示',
+                        content: res.message,
+                        showCancel: false,
+                        confirmText: '好'
+                    });
+                }
+            }, "POST", app.globalData.token); //delete
+    },
+    //    关注
+    follows: function (e) {
+        var that = this;
+        var is_follow = that.data.playDetails.user.is_follow;
+        if (is_follow) {
+            var type = "DELETE";
+            that.setData({
+                followText: "已关注",
+                followBg: false
+            });
+        } else {
+            type = "POST";
+        }
+        app.func.req('v1/ucentor/follows', {
+                fid: that.data.playDetails.user.uid
+            },
+            function (res) {
+                console.log(res); //401未登录
+                if (res.code == 200) {
+                    that.setData({
+                        followText: "已关注",
+                        followBg: false
+                    });
+                    wx.showToast({
+                        title: '已关注',
+                        icon: 'success',
+                        duration: 1500
+                    })
+                } else if (res.code == 401) {
+                    wx.navigateTo({
+                        url: '../../tabBar/login/login'
+                    });
+                }
+            }, type, app.globalData.token); //delete
+    },
+    // 打开评论框
+    ispeak: function () {
+        var that = this;
+        console.log("点到了啊")
+        if (!that.data.token) {
+            wx.navigateTo({
+                url: '../../tabBar/login/login'
+            });
+        } else {
+            that.setData({
+                no_talk: false,
+                talk_div: true,
+                speak_focus: true
+            })
+        }
+
+    },
+    quit_talkdiv: function () {
+        var that = this;
+        that.setData({
+            no_talk: true,
+            talk_div: false
+        })
+    },
+    //    评论
+    //     bindFormSubmit: function (e) {
+    //         var that = this;
+    //         console.log(e.detail.value.textarea);
+    //         app.func.req('v1/ucentor/comments', {
+    //                 video_id: that.data.options.id,
+    //                 content: e.detail.value.textarea,
+    //                 client_type: 3
+    //             },
+    //             function (res) {
+    //                 console.log(res);//401未登录
+    //                 if (res.code == 401) {
+    //                     wx.navigateTo({
+    //                         url: '../../tabBar/login/login'
+    //                     });
+    //                 } else if (res.code == 200) {
+    //                     that.setData({
+    //                         textarea: ""
+    //                     });
+    //                     getData(that);
+    //                 }
+    // //                var moreList = res.data.item;
+    //                 that.setData({
+    // //                    moreList:moreList
+    //                 });
+    //             }, "POST", app.globalData.token);//delete
+    //     },
+    zhan: function () {
+        this.setData({
+            v_height: 'auto',
+            zhan_show: true
+        })
+        dong = 84 + dong_y;
+    },
+    shou: function () {
+        this.setData({
+            v_height: 48,
+            zhan_show: false
+        })
+        dong = 42 + 84;
+    },
+    eInput: function (e) {
+        et = e.detail.value;
+    },
+    bindFormSubmits: function (e) {
+        var that = this;
+        app.func.req('v1/ucentor/comments', {
+                video_id: that.data.options.id,
+                content: et,
+                client_type: 3
+            },
+            function (res) {
+                console.log(res); //401未登录
+                if (res.code == 401) {
+                    wx.navigateTo({
+                        url: '../../tabBar/login/login'
+                    });
+                } else if (res.code == 200) {
+                    that.setData({
+                        textarea: ""
+                    });
+                    getData(that);
+                }
+            }, "POST", app.globalData.token); //delete
+    },
+    popcomment: function () {
+        var that = this;
+        if (that.data.token) {
+            that.setData({
+                popcom: true
+            })
+        } else {
+            wx.navigateTo({
+                url: '../../tabBar/login/login'
+            });
+        }
+    },
+    close_overtip: function () {
+        var that = this;
+        that.setData({
+            overshow: false
+        });
+    },
+    open_overtip: function () {
+        var that = this;
+        console.log(that.data.token);
+        if (!that.data.token) {
+            console.log("未登录");
+            // loginBuy(that,e);
+        } else if (that.data.flag) {
+            console.log("已登陆");
+        }
+        // that.setData({
+        //     overshow:true
+        // });
+    },
+    //退出登录
+    loginOut: function () {
+        var that = this;
+        app.func.req('v1/ucentor/users/logout', {},
+            function (res) {
+                console.log(res); //401未登录
+                if (res.code !== 200) {
+                    wx.navigateTo({
+                        url: '../../tabBar/login/login?'
+                    });
+                } else {
+                    app.globalData.token = "";
+                }
+            }, "POST", app.globalData.token);
+    },
+    //播放90秒
+    //     timeupdate: function (e) {
+    //         var that = this;
+    //         if (e.detail.currentTime >= 3) {
+    // //            getData(that);
+    // //            that.setData({
+    // //                video_src:""
+    // //            })
+    //         }
+    //     },
+    // 音频start
+    // 切换到视频
+    listen_video: function () {
+        var that = this;
+        // console.log(backgroundAudioManager.duration)
+        // console.log(backgroundAudioManager.currentTime)
+        // console.log(audiotime);
+        audiotime = backgroundAudioManager.currentTime;
+        videoContext.seek(audiotime);
+        backgroundAudioManager.stop();
+        // audioContext.pause();
+        videoContext.play()
+        that.setData({
+            play_way: true
+        })
+    },
+    // 切换到音频
+    listen_audio: function () {
+        var that = this;
+        if (startvideo) {
+            if (can_audio) {
+                videoContext.pause();
+                backgroundAudioManager.src = audiobg;
+                backgroundAudioManager.coverImgUrl = imageUrl;
+                backgroundAudioManager.title = video_name;
+                setTimeout(function () {
+                    backgroundAudioManager.seek(now_play);
+                }, 300)
+
+                // backgroundAudioManager.play();
+                // var all_time=secondTransferTime(all_audiotime)
+                that.setData({
+                    play_way: false,
+                    hidden: false
+                })
+                backgroundAudioManager.onCanplay(() => {
+                    console.log("开始了");
+                    that.setData({
+                        hidden: true
+                    })
+                });
+                backgroundAudioManager.onWaiting(() => {
+                    that.setData({
+                        hidden: false
+                    })
+                });
+
+            } else {
+                that.setData({
+                    can_audio_tip: false
+                })
+                setTimeout(function () {
+                    that.setData({
+                        can_audio_tip: true
+                    })
+                }, 1500)
+            }
+        } else {
+            that.setData({
+                none_check: false
+            })
+            setTimeout(function () {
+                that.setData({
+                    none_check: true
+                })
+            }, 1500)
+        }
+    },
+    // 播放音频
+    playAudio: function () {
+        backgroundAudioManager.play();
+        this.setData({
+            v_play: false
+        });
+    },
+    // 暂停音频
+    pauseAudio: function () {
+        backgroundAudioManager.pause();
+        this.setData({
+            v_play: true
+        });
+    },
+    // 下一个音频
+    audio_next: function () {
+        var that = this;
+        if (next_video != 0) {
+            if (can_audio) {
+                // console.log('../videoDetail/videoDetail?id=' + next_video + '&uid=' + next_video + '&userid=' + op_userid + '&is_audio=1&shop_id=' + shop_id + '&share_uid=' + share_uid)
+                wx.redirectTo({
+                    url: '../videoDetail/videoDetail?id=' + next_video + '&uid=' + next_video + '&userid=' + op_userid + '&is_audio=1&shop_id=' + shop_id + '&share_uid=' + share_uid
+                })
+            } else {
+                wx.redirectTo({
+                    url: '../videoDetail/videoDetail?id=' + next_video + '&uid=' + next_video + '&userid=' + op_userid + '&shop_id=' + shop_id + '&share_uid=' + share_uid
+                })
+            }
+        } else {
+            // 没有下一条音频
+            that.setData({
+                last_audio: false
+            })
+            setTimeout(function () {
+                that.setData({
+                    last_audio: true
+                })
+            }, 1500)
+        }
+    },
+    // 上一个视频
+    audio_before: function () {
+        var that = this;
+        if (before_video != 0) {
+            if (can_audio) {
+                wx.redirectTo({
+                    url: '../videoDetail/videoDetail?id=' + before_video + '&uid=' + before_video + '&userid=' + op_userid + '&is_audio=1&shop_id=' + shop_id + '&share_uid=' + share_uid
+                })
+            } else {
+                wx.redirectTo({
+                    url: '../videoDetail/videoDetail?id=' + before_video + '&uid=' + before_video + '&userid=' + op_userid + '&shop_id=' + shop_id + '&share_uid=' + share_uid
+                })
+            }
+            // wx.navigateTo({
+            //     url: '../videoDetail/videoDetail?id='+before_video+'&uid='+before_video+'&userid='+op_userid+'&is_audio=1'
+            // })
+        }
+    },
+    // 音频播放结束
+    audioPlayended: function () {
+        var that = this;
+        if (next_video != 0) {
+            if (can_audio) {
+                wx.redirectTo({
+                    url: '../videoDetail/videoDetail?id=' + next_video + '&uid=' + next_video + '&userid=' + op_userid + '&is_audio=1&shop_id=' + shop_id + '&share_uid=' + share_uid
+                })
+            } else {
+                wx.redirectTo({
+                    url: '../videoDetail/videoDetail?id=' + next_video + '&uid=' + next_video + '&userid=' + op_userid + '&shop_id=' + shop_id + '&share_uid=' + share_uid
+                })
+            }
+        } else {
+            // 没有下一条音频
+            that.setData({
+                last_audio: false
+            })
+            setTimeout(function () {
+                that.setData({
+                    last_audio: true
+                })
+            }, 1500)
+        }
+    },
+    //音频end
+    //slider拖动
+    hanleSliderChange: function (e) {
+        console.log(e.detail.value);
+        backgroundAudioManager.seek(e.detail.value)
+    },
+    //slider拖动结束
+    handleSliderMoveEnd: function (e) {
+        console.log(e);
+        // audioContext.seek()
+    },
+    // 点击slider时调用
+    sliderTap: function (e) {
+        console.log("sliderTap")
+        //this.seek()
+    },
 };
 </script>
