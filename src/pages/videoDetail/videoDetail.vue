@@ -415,18 +415,18 @@ export default {
   methods: {
     getData: function(that) {
       reqfn(
-        "v3/videos/detail/" + that.data.options.id,
+        "v3/videos/detail/" + that.options.id,
         {},
         function(res) {
           op_userid = res.data.user.uid;
           free_time = res.data.video_info.free_time;
           reqfn(
-            "v3/videos/more/" + op_userid + "/" + that.data.options.uid,
+            "v3/videos/more/" + op_userid + "/" + that.options.uid,
             {},
             function(res) {
               that.choosevideo = res.data;
               that.hidden = true;
-              that, (op_userid = op_userid);
+              that.op_userid = op_userid
             },
             "GET",
             that.globalData.token
