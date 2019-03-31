@@ -48,7 +48,7 @@
       <!--进度条-->
       <div class="sider_div">
         <div class="fl slider_time">
-          <test>{{pAudiotime}}</test>/
+          <test>{{pAudiotime}}</test>
           <test>{{all_time}}</test>
         </div>
         <slider
@@ -195,7 +195,8 @@
           </div>
         </div>
         <div class="video_fff video_bottom who_study" v-if="playDetails.video_info">
-          <div class="study_text_title">谁在学
+          <div class="study_text_title">
+            谁在学
             <text class="study_title_num">· {{playDetails.video_info.learn_count}}人</text>
           </div>
           <div class="watched">
@@ -293,9 +294,10 @@
     <loading v-show="!hidden">加载中...</loading>
   </div>
 </template>
-<style>
-</style>
+<style src="../../../static/main.css"></style>
+<style src="../../../static/css/videodetail.css"></style>
 <script>
+import { reqfn } from "../../utils/request.js";
 var vuid = "";
 var next_video = "";
 var before_video = "";
@@ -322,6 +324,40 @@ var is_audio = 0;
 var minss = false;
 var audiobg = "";
 var audios = false;
+// 音频播放结束--下一音频
+backgroundAudioManager.onEnded(function() {
+  console.log("音频自然结束");
+  var that = this;
+  // 有下一条音频
+  if (next_video != 0) {
+    // 可以播放
+    if (can_audio) {
+      wx.redirectTo({
+        url:
+          "../videoDetail/videoDetail?id=" +
+          next_video +
+          "&uid=" +
+          next_video +
+          "&userid=" +
+          op_userid +
+          "&is_audio=1&shop_id=" +
+          shop_id
+      });
+    } else {
+      wx.redirectTo({
+        url:
+          "../videoDetail/videoDetail?id=" +
+          next_video +
+          "&uid=" +
+          next_video +
+          "&userid=" +
+          op_userid +
+          "&shop_id=" +
+          shop_id
+      });
+    }
+  }
+});
 export default {
   data() {
     return {
@@ -377,162 +413,351 @@ export default {
     };
   },
   methods: {
-
-  },
-  onLoad: function (options) {
-        // op_userid=options.userid
-        // console.log(options)
-        can_audio = false;
-        share_id = options.id;
-        // share_id=options.id;
-        shop_id = options.shop_id;
-        startvideo = false;
-        if (app.globalData.shop_name) {
-            wx.setNavigationBarTitle({
-                title: app.globalData.shop_name
-            })
-        }
-        var that = this;
-        if (shop_id) {
-            console.log(shop_id)
-            // shop_id=options.shopid;
-            if (shop_id == 1810) {
-                that.setData({
-                    mins: false,
-                    shop_id: shop_id
-                })
-            } else {
-                that.setData({
-                    mins: true,
-                    shop_id: shop_id
-                })
-            }
-            // app.func.req('v1/shops/' + shop_id, {},
-            //     function (res) {
-            //         wx.setNavigationBarTitle({
-            //             title: res.data.shop_name
-            //         })
-            //     }, "GET", app.globalData.token);
-            reqfn("v1/shops/" + shop_id, {},
+    getData: function(that) {
+      reqfn(
+        "v3/videos/detail/" + that.data.options.id,
+        {},
         function(res) {
-          wx.setNavigationBarTitle({
-                        title: res.data.shop_name
-            })
+          op_userid = res.data.user.uid;
+          free_time = res.data.video_info.free_time;
+          reqfn(
+            "v3/videos/more/" + op_userid + "/" + that.data.options.uid,
+            {},
+            function(res) {
+              that.choosevideo = res.data;
+              that.hidden = true;
+              that, (op_userid = op_userid);
+            },
+            "GET",
+            that.globalData.token
+          );
+          audiobg = res.data.video_info.audio_url;
+          if (audios) {
+            videoContext.pause();
+            // backgroundAudioManager.src=audiobg;
+          }
+          backgroundAudioManager.coverImgUrl = res.data.video_info.cover;
+          backgroundAudioManager.title = res.data.video_info.name;
+          var playDetails = res.data;
+          vuid = playDetails.user.uid;
+          next_video = playDetails.video_info.next;
+          before_video = playDetails.video_info.before;
+          video_name = res.data.video_info.name;
+          imageUrl = res.data.video_info.cover;
+          // all_audiotime=res.data.video_info.duration;
+          // var all_time=secondTransferTime(all_audiotime);
+          var all_time = res.data.video_info.duration;
+          var min = all_time.split(":")[0];
+          var sec = all_time.split(":")[1];
+          all_audiotime = Number(min * 60) + Number(sec);
+          for (var i = 0; i < playDetails.comment.length; i++) {
+            var timestr = playDetails.comment[i].add_time;
+            playDetails.comment[i].add_time = timestr.substring(0, 8);
+            // console.log(timestr);
+          }
+            that.playDetails = playDetails
+            that.playDetails_co = playDetails.user.is_collect
+            that.bgImg = escape(playDetails.video_info.cover)
+            that.video_poster = playDetails.video_info.cover
+            that.video_src = playDetails.video_info.file_url
+            that.audio_src = res.data.video_info.audio_url
+            that.all_audiotime = all_audiotime
+            that.all_time = all_tim
+          if (playDetails.video_info.payment > 0) {
+            // 收费
+            if (playDetails.user.is_allow == 1) {
+              // 已购买或已兑换
+              try_video = false;
+              can_audio = true;
+              that.try_video = false
+            } else if (playDetails.video_info.free_time < 1) {
+              // 没有试看时长
+              try_video = false;
+              that.video_src = ""
+            } else {
+              try_video = true;
+            }
+          } else {
+            //免费
+            try_video = false;
+            can_audio = true;
+          }
+          if (!can_audio) {
+            // audioContext.pause();
+            that.play_way = true
+            videoContext.play();
+          } else {
+            if (is_audio > 0) {
+              backgroundAudioManager.src = audiobg;
+              that.vauto = false
+              videoContext.pause();
+            }
+          }
+          // if (playDetails.user.is_collect) {
+          //     that.setData({
+          //         collect_src: '../../images/shoucang_red@3x.png'
+          //     });
+          // }
+          var is_follow = playDetails.user.is_follow;
+          if (is_follow) {
+            that.followText = "已关注"
+            that.followBg = false
+          }
+          that.token = that.globalData.token
+          // 展开和收起
+          //创建节点选择器
+          dong = 87;
+          if (playDetails.video_info.content) {
+            var query = wx.createSelectorQuery();
+            console.log(query);
+            //选择id
+            query.select("#giveheight").boundingClientRect();
+            console.log(query);
+            query.exec(function(res) {
+              //res就是 所有标签为mjltest的元素的信息 的数组
+              //取高度
+              // console.log(res[0].height);
+              dong_y = res[0].height;
+              if (res[0].height > 24) {
+                that.v_height = 48
+                that.noneShou = false
+              } else {
+                that.noneShou = true
+              }
+            });
+            dong = 84 + 42;
+          }
         },
         "GET",
         that.globalData.token
       );
-        } else {
-            shop_id = 0;
-            that.setData({
-                mins: true
-            })
-            wx.setNavigationBarTitle({
-                title: '学两招'
-            })
-        }
-        wx.getSystemInfo({
-            success: function (res) {
-                if (res.platform == 'ios') {
-                    that.setData({
-                        environment: false
-                    })
-                } else if (res.platform == 'android') {
-                    that.setData({
-                        environment: true
-                    })
-                } else {
-                    that.setData({
-                        environment: true
-                    })
-                }
-                that.setData({
-                    scrollHeight: res.windowHeight
-                });
-            }
-        });
-        is_audio = 0;
-        if (options.is_audio) {
-            is_audio = options.is_audio;
-            console.log(options.is_audio)
-            that.setData({
-                play_way: false
-            })
-            // audioContext.play();
-        }
-        if (options.share_uid && options.share_uid != app.globalData.fid) {
-            share_uid = options.share_uid;
-        }
-        that.setData({
-            share_uid: share_uid
-        })
-        console.log(share_uid);
-        var pheight = wx.getSystemInfoSync().windowHeight - 210;
-        // console.log(pheight)
-        wx.showToast({
-            title: "加载中",
-            icon: 'loading'
-        });
-        that.setData({
-            options: options,
-            op_userid: options.userid,
-            shop_id: shop_id,
-            pheight: pheight,
-            activitydata: {
-                "name": "视频详情页" + options.id
-            }
-        });
-        //getData(that);
-        app.func.req('v2/videos/more' + options.uid, {},
-            function (res) {
-                var moreList = res.data.item;
-                that.setData({
-                    moreList: moreList,
-                });
-            });
-        // wx.setNavigationBarTitle({
-        //     title: that.data.activitydata.name
-        // })
-        if (app.globalData.token) {
-            console.log("已登录")
-            app.func.req('v1/ucentor/histories', {
-                    video_id: share_id
-                },
-                function (res) {
-                    console.log("历史记录了");
-                }, "POST", app.globalData.token);
-        }
-        // var that=this;
-        // 更新进度条
-        backgroundAudioManager.onTimeUpdate(function () {
-            // console.log(backgroundAudioManager.currentTime);
-            // backgroundAudioManager.currentTime
-            audiotime = backgroundAudioManager.currentTime.toFixed(0);
-            var pAudiotime = secondTransferTime(audiotime);
-            that.setData({
-                pAudiotime: pAudiotime,
-                all_audiotime: all_audiotime,
-                audiovalue: audiotime
-            })
-        })
-        // 音频暂停
-        backgroundAudioManager.onPause(function () {
-            console.log("暂停了呢");
-            audiotime = backgroundAudioManager.currentTime.toFixed(0);
-            var pAudiotime = secondTransferTime(audiotime);
-            that.setData({
-                v_play: true,
-            })
-        })
-        // 音频开始播放
-        backgroundAudioManager.onPlay(function () {
-            console.log("开始了");
-            videoContext.pause();
-            that.setData({
-                v_play: false,
-                hidden: true
-            })
-        })
     },
+    // 播放结束
+    playend: function() {
+      var that = this;
+      if (next_video != 0) {
+        wx.navigateTo({
+          url:
+            "../videoDetail/videoDetail?id=" +
+            next_video +
+            "&uid=" +
+            next_video +
+            "&userid=" +
+            op_userid +
+            "&shop_id=" +
+            shop_id
+        });
+      }
+    },
+    playtime: function(e) {
+      var that = this;
+      if (try_video) {
+        // console.log(e.detail.currentTime);
+        if (e.detail.currentTime > free_time) {
+          // var videoContext = wx.createVideoContext('video_play');
+          // console.log(videoContext)
+          videoContext.pause();
+          that.playvideo = false
+        }
+      } else {
+        now_play = e.detail.currentTime;
+      }
+    },
+    bindpause: function() {
+      console.log(now_play);
+      this.sv = now_play
+    },
+    // 视频开始播放
+    videoplay: function() {
+      startvideo = true;
+      console.log("开始播放视频");
+      backgroundAudioManager.stop();
+    },
+    bindpause: function() {
+      console.log(now_play);
+      this.sv = now_play
+    }
+  },
+  onLoad: function(options) {
+    // op_userid=options.userid
+    console.log(options);
+    can_audio = false;
+    share_id = options.id;
+    // share_id=options.id;
+    shop_id = options.shop_id;
+    startvideo = false;
+    // if (app.globalData.shop_name) {
+    //     wx.setNavigationBarTitle({
+    //         title: app.globalData.shop_name
+    //     })
+    // }
+    var that = this;
+    // if (shop_id) {
+    //   console.log(shop_id);
+    //   // shop_id=options.shopid;
+    //   if (shop_id == 1810) {
+    //     that.mins = false;
+    //     tha.shop_id = shop_id;
+    //   } else {
+    //     that.mins = true;
+    //     that.shop_id = shop_id;
+    //   }
+    //   // app.func.req('v1/shops/' + shop_id, {},
+    //   //     function (res) {
+    //   //         wx.setNavigationBarTitle({
+    //   //             title: res.data.shop_name
+    //   //         })
+    //   //     }, "GET", app.globalData.token);
+    //   reqfn(
+    //     "v1/shops/" + shop_id,
+    //     {},
+    //     function(res) {
+    //       wx.setNavigationBarTitle({
+    //         title: res.data.shop_name
+    //       });
+    //     },
+    //     "GET",
+    //     that.globalData.token
+    //   );
+    // } else {
+    shop_id = 0;
+    that.mins = true;
+    wx.setNavigationBarTitle({
+      title: "学两招"
+    });
+    // }
+    wx.getSystemInfo({
+      success: function(res) {
+        if (res.platform == "ios") {
+          that.environment = false;
+        } else if (res.platform == "android") {
+          that.environment = true;
+        } else {
+          that.environment = true;
+        }
+        // that.setData({
+        //     scrollHeight: res.windowHeight
+        // });
+      }
+    });
+    is_audio = 0;
+    if (options.is_audio) {
+      is_audio = options.is_audio;
+      console.log(options.is_audio);
+      that.play_way = false;
+      // audioContext.play();
+    }
+    if (options.share_uid && options.share_uid != that.globalData.fid) {
+      share_uid = options.share_uid;
+    }
+    that.share_uid = share_uid;
+    console.log(share_uid);
+    var pheight = wx.getSystemInfoSync().windowHeight - 210;
+    // console.log(pheight)
+    wx.showToast({
+      title: "加载中",
+      icon: "loading"
+    });
+    that.options = options;
+    that.op_userid = options.userid;
+    that.shop_id = shop_id;
+    that.pheight = pheight;
+    // that.activitydata: {
+    //     "name": "视频详情页" + options.id
+    // }
+    //getData(that);
+    // app.func.req('v2/videos/more' + options.uid, {},
+    //     function (res) {
+    //         var moreList = res.data.item;
+    //         that.moreList = moreList
+    //     });
+    reqfn(
+      "v2/videos/more" + options.uid,
+      {},
+      function(res) {
+        var moreList = res.data.item;
+        that.moreList = moreList;
+      },
+      "GET",
+      that.globalData.token
+    );
+    // wx.setNavigationBarTitle({
+    //     title: that.data.activitydata.name
+    // })
+    if (that.globalData.token) {
+      console.log("已登录");
+      // app.func.req(
+      //   "v1/ucentor/histories",
+      //   {
+      //     video_id: share_id
+      //   },
+      //   function(res) {
+      //     console.log("历史记录了");
+      //   },
+      //   "POST",
+      //   app.globalData.token
+      // );
+      reqfn(
+        "v1/ucentor/histories",
+        {
+          video_id: share_id
+        },
+        function(res) {
+          console.log("历史记录了");
+        },
+        "POST",
+        that.globalData.token
+      );
+    }
+    // var that=this;
+    // 更新进度条
+    backgroundAudioManager.onTimeUpdate(function() {
+      // console.log(backgroundAudioManager.currentTime);
+      // backgroundAudioManager.currentTime
+      audiotime = backgroundAudioManager.currentTime.toFixed(0);
+      var pAudiotime = secondTransferTime(audiotime);
+      that.pAudiotime = pAudiotime;
+      that.all_audiotime = all_audiotime;
+      that.audiovalue = audiotime;
+    });
+    // 音频暂停
+    backgroundAudioManager.onPause(function() {
+      console.log("暂停了呢");
+      audiotime = backgroundAudioManager.currentTime.toFixed(0);
+      var pAudiotime = secondTransferTime(audiotime);
+      that.v_play = true;
+    });
+    // 音频开始播放
+    backgroundAudioManager.onPlay(function() {
+      console.log("开始了");
+      videoContext.pause();
+      that.v_play = false;
+      that.hidden = true;
+    });
+  },
+  onReady: function() {
+    // 页面渲染完成时
+    console.log("页面加载完成");
+    videoContext = wx.createVideoContext("video_play");
+    wx.hideToast();
+    // if(is_audio>0){
+    //     audioContext.play();
+    // }
+  },
+  onShow: function() {
+    // 页面显示时
+    var that = this;
+    that.getData(that);
+  },
+  onHide: function() {
+    // 页面隐藏时
+    videoContext.pause();
+    // innerAudioContext.pause();
+    console.log("页面隐藏");
+  },
+  onUnload: function() {
+    // 页面卸载时
+    videoContext.pause();
+  }
 };
 </script>

@@ -35,9 +35,7 @@
       <!--7-25UI改版-->
       <div class="list_all" v-if="listVideo">
         <div class="list_wrapper02" v-for="videosList in listVideo" :key="videosList">
-          <a
-            :href="'/pages/videoDetail/videoDetail?id='+videosList.id+'&uid='+videosList.id+'&userid='+userid+'&shop_id='+shop_id+'&share_uid='+share_uid"
-          >
+          <navigator :url="'/pages/videoDetail/main?id='+videosList.id+'&uid='+videosList.id+'&userid='+userid+'&shop_id='+shop_id+'&share_uid='+share_uid">
             <div class="fl list_num">{{index+1}}.</div>
             <div class="list_num_title">
               <div class="two_line">
@@ -47,7 +45,7 @@
               <div class="list_duration">时长{{videosList.duration}}</div>
             </div>
             <div class="lock_icon" v-if="videosList.payment>0 && videosList.is_buy==0"></div>
-          </a>
+          </navigator>
         </div>
       </div>
       <div v-if="have_video">
@@ -57,10 +55,10 @@
         </div>
       </div>
       <div v-if="resDatanum.count>4">
-        <a
-          :href="'../../detail/teacherAll/teacherAll?uid='+op_uid+'&shop_id='+shop_id+'&share_uid='+share_uid"
+        <navigator
+          :url="'../../detail/teacherAll/teacherAll?uid='+op_uid+'&shop_id='+shop_id+'&share_uid='+share_uid"
           class="see_more_class"
-        >查看全部课程</a>
+        >查看全部课程</navigator>
       </div>
       <!--7-25改版 简介-->
       <div>
@@ -88,12 +86,12 @@
           <div class="fl vip_footer_guan" @click="ifollow" v-else>
             <i class="guan_icon"></i>关注
           </div>
-          <a
+          <navigator
             class="link2_vip vip_none1" id="link2_vip" :url="'../confirm/confirm?priceVideo='+class_p+'&op_uid='+op_uid+'&videocon='+videocon+'&nameVideo='+nameVideo+'&bgImg='+bgImg+'&shop_id='+shop_id+'&share_uid='+share_uid">
             <div class="be-vip">
               <span id="span1_vip">¥ {{class_all}}订阅栏目</span>
             </div>
-          </a>
+          </navigator>
           <div class="link2_vip vip_none2" id="link2_vip">
             <div class="be-vip">
               <span id="span2_vip" class="span2_txt">{{surplus_days}}天后到期</span>
