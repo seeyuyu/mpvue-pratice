@@ -8,7 +8,7 @@
         :poster="video_poster"
         show-center-play-btn="false"
         autoplay="true"
-        bindpause="that.bindpause"
+        bindpause="bindpause"
         :src="video_src"
         controls="true"
         :initial-time="playstartTime"
