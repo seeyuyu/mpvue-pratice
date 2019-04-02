@@ -802,7 +802,6 @@ export default {
     // 音频start
     // 切换到视频
     listen_video: function () {
-      console.log("222222222222222222222222222")
         var that = this;
         // console.log(backgroundAudioManager.duration)
         // console.log(backgroundAudioManager.currentTime)
