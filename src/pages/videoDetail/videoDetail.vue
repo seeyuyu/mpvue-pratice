@@ -8,13 +8,13 @@
         :poster="video_poster"
         show-center-play-btn="false"
         autoplay="true"
-        bindpause="bindpause"
+        @pause="bindpause"
         :src="video_src"
         controls="true"
         :initial-time="playstartTime"
-        bindended="playend"
-        bindtimeupdate="playtime"
-        bindplay="videoplay"
+        @ended="playend"
+        @timeupdate="playtime"
+        @play="videoplay"
         v-show="playvideo"
       ></video>
       <div class="video_overview" v-show="!playvideo">
@@ -97,7 +97,7 @@
       </div>
     </div>
     <!-- style="height: {{pheight}}px;" -->
-    <scroll-view scroll-y class="scrv" bindscroll="scrollWhere">
+    <scroll-view style="height:300px;" scroll-y class="scrv" @bindscroll="scrollWhere">
       <div class="video_playFiles video_fff">
         <div class="video_detail">
           <!--视频信息-->
@@ -576,191 +576,8 @@ export default {
     bindpause: function() {
       console.log(now_play);
       this.sv = now_play
-    }
-  },
-  onLoad: function(options) {
-    // op_userid=options.userid
-    console.log(options);
-    can_audio = false;
-    share_id = options.id;
-    // share_id=options.id;
-    shop_id = options.shop_id;
-    startvideo = false;
-    // if (app.globalData.shop_name) {
-    //     wx.setNavigationBarTitle({
-    //         title: app.globalData.shop_name
-    //     })
-    // }
-    var that = this;
-    // if (shop_id) {
-    //   console.log(shop_id);
-    //   // shop_id=options.shopid;
-    //   if (shop_id == 1810) {
-    //     that.mins = false;
-    //     tha.shop_id = shop_id;
-    //   } else {
-    //     that.mins = true;
-    //     that.shop_id = shop_id;
-    //   }
-    //   // app.func.req('v1/shops/' + shop_id, {},
-    //   //     function (res) {
-    //   //         wx.setNavigationBarTitle({
-    //   //             title: res.data.shop_name
-    //   //         })
-    //   //     }, "GET", app.globalData.token);
-    //   reqfn(
-    //     "v1/shops/" + shop_id,
-    //     {},
-    //     function(res) {
-    //       wx.setNavigationBarTitle({
-    //         title: res.data.shop_name
-    //       });
-    //     },
-    //     "GET",
-    //     that.globalData.token
-    //   );
-    // } else {
-    shop_id = 0;
-    that.mins = true;
-    wx.setNavigationBarTitle({
-      title: "学两招"
-    });
-    // }
-    wx.getSystemInfo({
-      success: function(res) {
-        if (res.platform == "ios") {
-          that.environment = false;
-        } else if (res.platform == "android") {
-          that.environment = true;
-        } else {
-          that.environment = true;
-        }
-        // that.setData({
-        //     scrollHeight: res.windowHeight
-        // });
-      }
-    });
-    is_audio = 0;
-    if (options.is_audio) {
-      is_audio = options.is_audio;
-      console.log(options.is_audio);
-      that.play_way = false;
-      // audioContext.play();
-    }
-    if (options.share_uid && options.share_uid != that.globalData.fid) {
-      share_uid = options.share_uid;
-    }
-    that.share_uid = share_uid;
-    console.log(share_uid);
-    var pheight = wx.getSystemInfoSync().windowHeight - 210;
-    // console.log(pheight)
-    wx.showToast({
-      title: "加载中",
-      icon: "loading"
-    });
-    that.options = options;
-    that.op_userid = options.userid;
-    that.shop_id = shop_id;
-    that.pheight = pheight;
-    // that.activitydata: {
-    //     "name": "视频详情页" + options.id
-    // }
-    //getData(that);
-    // app.func.req('v2/videos/more' + options.uid, {},
-    //     function (res) {
-    //         var moreList = res.data.item;
-    //         that.moreList = moreList
-    //     });
-    reqfn(
-      "v2/videos/more" + options.uid,
-      {},
-      function(res) {
-        var moreList = res.data.item;
-        that.moreList = moreList;
-      },
-      "GET",
-      that.globalData.token
-    );
-    // wx.setNavigationBarTitle({
-    //     title: that.data.activitydata.name
-    // })
-    if (that.globalData.token) {
-      console.log("已登录");
-      // app.func.req(
-      //   "v1/ucentor/histories",
-      //   {
-      //     video_id: share_id
-      //   },
-      //   function(res) {
-      //     console.log("历史记录了");
-      //   },
-      //   "POST",
-      //   app.globalData.token
-      // );
-      reqfn(
-        "v1/ucentor/histories",
-        {
-          video_id: share_id
-        },
-        function(res) {
-          console.log("历史记录了");
-        },
-        "POST",
-        that.globalData.token
-      );
-    }
-    // var that=this;
-    // 更新进度条
-    backgroundAudioManager.onTimeUpdate(function() {
-      // console.log(backgroundAudioManager.currentTime);
-      // backgroundAudioManager.currentTime
-      audiotime = backgroundAudioManager.currentTime.toFixed(0);
-      var pAudiotime = secondTransferTime(audiotime);
-      that.pAudiotime = pAudiotime;
-      that.all_audiotime = all_audiotime;
-      that.audiovalue = audiotime;
-    });
-    // 音频暂停
-    backgroundAudioManager.onPause(function() {
-      console.log("暂停了呢");
-      audiotime = backgroundAudioManager.currentTime.toFixed(0);
-      var pAudiotime = secondTransferTime(audiotime);
-      that.v_play = true;
-    });
-    // 音频开始播放
-    backgroundAudioManager.onPlay(function() {
-      console.log("开始了");
-      videoContext.pause();
-      that.v_play = false;
-      that.hidden = true;
-    });
-  },
-  onReady: function() {
-    // 页面渲染完成时
-    console.log("页面加载完成");
-    videoContext = wx.createVideoContext("video_play");
-    wx.hideToast();
-    // if(is_audio>0){
-    //     audioContext.play();
-    // }
-  },
-  onShow: function() {
-    // 页面显示时
-    var that = this;
-    that.getData(that);
-  },
-  onHide: function() {
-    // 页面隐藏时
-    videoContext.pause();
-    // innerAudioContext.pause();
-    console.log("页面隐藏");
-  },
-  onUnload: function() {
-    // 页面卸载时
-    videoContext.pause();
-  },
-
-  scrollWhere: function (e) {
+    },
+    scrollWhere: function (e) {
         var that = this;
         // console.log(e.detail.scrollTop)
         // console.log("高度："+dong)
@@ -773,7 +590,7 @@ export default {
                 speak_div_top: false
             })
         }
-    },
+  },
     //   点赞和倒赞
     loves: function (e) {
         var that = this;
@@ -1004,19 +821,10 @@ export default {
                 }
             }, "POST", app.globalData.token);
     },
-    //播放90秒
-    //     timeupdate: function (e) {
-    //         var that = this;
-    //         if (e.detail.currentTime >= 3) {
-    // //            getData(that);
-    // //            that.setData({
-    // //                video_src:""
-    // //            })
-    //         }
-    //     },
     // 音频start
     // 切换到视频
     listen_video: function () {
+      console.log("222222222222222222222222222")
         var that = this;
         // console.log(backgroundAudioManager.duration)
         // console.log(backgroundAudioManager.currentTime)
@@ -1032,6 +840,7 @@ export default {
     },
     // 切换到音频
     listen_audio: function () {
+      console.log("11111111111111111111111111111111111111111111111111111111")
         var that = this;
         if (startvideo) {
             if (can_audio) {
@@ -1180,6 +989,189 @@ export default {
     sliderTap: function (e) {
         console.log("sliderTap")
         //this.seek()
-    },
+    }
+  },
+  onLoad: function(options) {
+    // op_userid=options.userid
+    console.log(options);
+    can_audio = false;
+    share_id = options.id;
+    // share_id=options.id;
+    shop_id = options.shop_id;
+    startvideo = false;
+    // if (app.globalData.shop_name) {
+    //     wx.setNavigationBarTitle({
+    //         title: app.globalData.shop_name
+    //     })
+    // }
+    var that = this;
+    // if (shop_id) {
+    //   console.log(shop_id);
+    //   // shop_id=options.shopid;
+    //   if (shop_id == 1810) {
+    //     that.mins = false;
+    //     tha.shop_id = shop_id;
+    //   } else {
+    //     that.mins = true;
+    //     that.shop_id = shop_id;
+    //   }
+    //   // app.func.req('v1/shops/' + shop_id, {},
+    //   //     function (res) {
+    //   //         wx.setNavigationBarTitle({
+    //   //             title: res.data.shop_name
+    //   //         })
+    //   //     }, "GET", app.globalData.token);
+    //   reqfn(
+    //     "v1/shops/" + shop_id,
+    //     {},
+    //     function(res) {
+    //       wx.setNavigationBarTitle({
+    //         title: res.data.shop_name
+    //       });
+    //     },
+    //     "GET",
+    //     that.globalData.token
+    //   );
+    // } else {
+    shop_id = 0;
+    that.mins = true;
+    wx.setNavigationBarTitle({
+      title: "学两招"
+    });
+    // }
+    wx.getSystemInfo({
+      success: function(res) {
+        if (res.platform == "ios") {
+          that.environment = false;
+        } else if (res.platform == "android") {
+          that.environment = true;
+        } else {
+          that.environment = true;
+        }
+        console.log(res.windowHeight)
+        that.scrollHeight = res.windowHeight
+      }
+    });
+    is_audio = 0;
+    if (options.is_audio) {
+      is_audio = options.is_audio;
+      console.log(options.is_audio);
+      that.play_way = false;
+      // audioContext.play();
+    }
+    if (options.share_uid && options.share_uid != that.globalData.fid) {
+      share_uid = options.share_uid;
+    }
+    that.share_uid = share_uid;
+    console.log(share_uid);
+    var pheight = wx.getSystemInfoSync().windowHeight - 210;
+    // console.log(pheight)
+    wx.showToast({
+      title: "加载中",
+      icon: "loading"
+    });
+    that.options = options;
+    that.op_userid = options.userid;
+    that.shop_id = shop_id;
+    that.pheight = pheight;
+    // that.activitydata: {
+    //     "name": "视频详情页" + options.id
+    // }
+    //getData(that);
+    // app.func.req('v2/videos/more' + options.uid, {},
+    //     function (res) {
+    //         var moreList = res.data.item;
+    //         that.moreList = moreList
+    //     });
+    reqfn(
+      "v2/videos/more" + options.uid,
+      {},
+      function(res) {
+        var moreList = res.data.item;
+        that.moreList = moreList;
+      },
+      "GET",
+      that.globalData.token
+    );
+    // wx.setNavigationBarTitle({
+    //     title: that.data.activitydata.name
+    // })
+    if (that.globalData.token) {
+      console.log("已登录");
+      // app.func.req(
+      //   "v1/ucentor/histories",
+      //   {
+      //     video_id: share_id
+      //   },
+      //   function(res) {
+      //     console.log("历史记录了");
+      //   },
+      //   "POST",
+      //   app.globalData.token
+      // );
+      reqfn(
+        "v1/ucentor/histories",
+        {
+          video_id: share_id
+        },
+        function(res) {
+          console.log("历史记录了");
+        },
+        "POST",
+        that.globalData.token
+      );
+    }
+    // var that=this;
+    // 更新进度条
+    backgroundAudioManager.onTimeUpdate(function() {
+      // console.log(backgroundAudioManager.currentTime);
+      // backgroundAudioManager.currentTime
+      audiotime = backgroundAudioManager.currentTime.toFixed(0);
+      var pAudiotime = secondTransferTime(audiotime);
+      that.pAudiotime = pAudiotime;
+      that.all_audiotime = all_audiotime;
+      that.audiovalue = audiotime;
+    });
+    // 音频暂停
+    backgroundAudioManager.onPause(function() {
+      console.log("暂停了呢");
+      audiotime = backgroundAudioManager.currentTime.toFixed(0);
+      var pAudiotime = secondTransferTime(audiotime);
+      that.v_play = true;
+    });
+    // 音频开始播放
+    backgroundAudioManager.onPlay(function() {
+      console.log("开始了");
+      videoContext.pause();
+      that.v_play = false;
+      that.hidden = true;
+    });
+  },
+  onReady: function() {
+    // 页面渲染完成时
+    console.log("页面加载完成");
+    videoContext = wx.createVideoContext("video_play");
+    wx.hideToast();
+    // if(is_audio>0){
+    //     audioContext.play();
+    // }
+  },
+  onShow: function() {
+    // 页面显示时
+    var that = this;
+    that.getData(that);
+  },
+  onHide: function() {
+    // 页面隐藏时
+    videoContext.pause();
+    // innerAudioContext.pause();
+    console.log("页面隐藏");
+  },
+  onUnload: function() {
+    // 页面卸载时
+    videoContext.pause();
+  },
+
+
 };
 </script>
