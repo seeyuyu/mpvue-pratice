@@ -582,13 +582,9 @@ export default {
         // console.log(e.detail.scrollTop)
         // console.log("高度："+dong)
         if (e.detail.scrollTop > dong) {
-            that.setData({
-                speak_div_top: true
-            })
+            that.speak_div_top = true
         } else {
-            that.setData({
-                speak_div_top: false
-            })
+            that.speak_div_top = false
         }
   },
     //   点赞和倒赞
@@ -603,9 +599,7 @@ export default {
                 //console.log(res);//401未登录
                 if (res.code == 200) {
                     var obj = that.data.playDetails;
-                    that.setData({
-                        playDetails: obj
-                    });
+                    that.playDetails = obj
                 } else if (res.code == 401) {
                     wx.navigateTo({
                         url: '../../tabBar/login/login'
@@ -629,9 +623,7 @@ export default {
             function (res) {
                 console.log(res); //401未登录
                 if (res.code == 200) {
-                    that.setData({
-                        playDetails_co: 1
-                    });
+                    that.playDetails_co = 1
                     wx.showToast({
                         title: '已收藏',
                         icon: 'success',
@@ -657,10 +649,8 @@ export default {
         var is_follow = that.data.playDetails.user.is_follow;
         if (is_follow) {
             var type = "DELETE";
-            that.setData({
-                followText: "已关注",
-                followBg: false
-            });
+            that.followText = "已关注"
+            that.followBg = false
         } else {
             type = "POST";
         }
@@ -670,10 +660,8 @@ export default {
             function (res) {
                 console.log(res); //401未登录
                 if (res.code == 200) {
-                    that.setData({
-                        followText: "已关注",
-                        followBg: false
-                    });
+                    that.followText = "已关注"
+                    that.followBg = false
                     wx.showToast({
                         title: '已关注',
                         icon: 'success',
@@ -695,20 +683,16 @@ export default {
                 url: '../../tabBar/login/login'
             });
         } else {
-            that.setData({
-                no_talk: false,
-                talk_div: true,
-                speak_focus: true
-            })
+          that.no_talk = false
+          that.talk_div = true
+          that.speak_focus = true
         }
 
     },
     quit_talkdiv: function () {
         var that = this;
-        that.setData({
-            no_talk: true,
-            talk_div: false
-        })
+        that.no_talk = true
+        that.talk_div = false
     },
     //    评论
     //     bindFormSubmit: function (e) {
@@ -768,9 +752,7 @@ export default {
                         url: '../../tabBar/login/login'
                     });
                 } else if (res.code == 200) {
-                    that.setData({
-                        textarea: ""
-                    });
+                    that.textarea = ""
                     getData(that);
                 }
             }, "POST", app.globalData.token); //delete
@@ -778,9 +760,7 @@ export default {
     popcomment: function () {
         var that = this;
         if (that.data.token) {
-            that.setData({
-                popcom: true
-            })
+            that.popcom = true
         } else {
             wx.navigateTo({
                 url: '../../tabBar/login/login'
@@ -789,9 +769,7 @@ export default {
     },
     close_overtip: function () {
         var that = this;
-        that.setData({
-            overshow: false
-        });
+        that.overshow = false
     },
     open_overtip: function () {
         var that = this;
@@ -834,9 +812,7 @@ export default {
         backgroundAudioManager.stop();
         // audioContext.pause();
         videoContext.play()
-        that.setData({
-            play_way: true
-        })
+        that.play_way = true
     },
     // 切换到音频
     listen_audio: function () {
@@ -854,40 +830,26 @@ export default {
 
                 // backgroundAudioManager.play();
                 // var all_time=secondTransferTime(all_audiotime)
-                that.setData({
-                    play_way: false,
-                    hidden: false
-                })
+                that.play_way = false
+                that.hidden = false
                 backgroundAudioManager.onCanplay(() => {
                     console.log("开始了");
-                    that.setData({
-                        hidden: true
-                    })
+                    that.hidden = true
                 });
                 backgroundAudioManager.onWaiting(() => {
-                    that.setData({
-                        hidden: false
-                    })
+                    that.hidden = false
                 });
 
             } else {
-                that.setData({
-                    can_audio_tip: false
-                })
+                that.can_audio_tip = false
                 setTimeout(function () {
-                    that.setData({
-                        can_audio_tip: true
-                    })
+                    that.can_audio_tip = true
                 }, 1500)
             }
         } else {
-            that.setData({
-                none_check: false
-            })
+            that.none_check = false
             setTimeout(function () {
-                that.setData({
-                    none_check: true
-                })
+                that.none_check = true
             }, 1500)
         }
     },
@@ -921,13 +883,9 @@ export default {
             }
         } else {
             // 没有下一条音频
-            that.setData({
-                last_audio: false
-            })
+            that.last_audio = false
             setTimeout(function () {
-                that.setData({
-                    last_audio: true
-                })
+                that.last_audio = true
             }, 1500)
         }
     },
@@ -964,13 +922,9 @@ export default {
             }
         } else {
             // 没有下一条音频
-            that.setData({
-                last_audio: false
-            })
+            that.last_audio = false
             setTimeout(function () {
-                that.setData({
-                    last_audio: true
-                })
+                that.last_audio = true
             }, 1500)
         }
     },
