@@ -552,7 +552,10 @@ export default {
     playtime: function(e) {
       var that = this;
       if (try_video) {
-        // console.log(e.detail.currentTime);
+        console.log("--------------------------------------")
+        console.log(e)
+        console.log(e.timeStamp);
+        console.log(free_time)
         if (e.detail.currentTime > free_time) {
           // var videoContext = wx.createVideoContext('video_play');
           // console.log(videoContext)
