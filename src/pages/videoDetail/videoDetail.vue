@@ -97,7 +97,7 @@
       </div>
     </div>
     <!-- style="height: {{pheight}}px;" -->
-    <scroll-view style="height:300px;" scroll-y class="scrv" @bindscroll="scrollWhere">
+    <scroll-view style="height:100%;" scroll-y class="scrv" @bindscroll="scrollWhere">
       <div class="video_playFiles video_fff">
         <div class="video_detail">
           <!--视频信息-->
@@ -589,7 +589,7 @@ export default {
         } else {
             that.speak_div_top = false
         }
-  },
+    },
     //   点赞和倒赞
     loves: function (e) {
         var that = this;
